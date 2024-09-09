@@ -1,69 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Динамический баннер</title>
-  <style>
-    #banner {
-      position: relative; /* Для позиционирования элементов */
+const banner = document.getElementById('banner');
+
+function updateBanner() {
+  // Рандомный файл изображения
+  var randomFilename = Math.floor(Math.random() * 10) + 1;
+  // Загрузка изображения
+  var img = document.createElement('img');
+  img.src = 'http://185.158.153.19:8000/localhost?getImg?t=' + Date.now(); // Добавляем временную метку
+
+  img.onload = function() {
+    // Очистка баннера
+    banner.innerHTML = '';
+
+    // Создание контейнера с точками
+    const dotContainer = document.createElement('div');
+    dotContainer.classList.add('dot-container');
+
+    // Создание точек
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement('span');
+      dot.classList.add('dot');
+      dotContainer.appendChild(dot);
     }
 
-    #banner img {
-      max-width: 100%; /* Максимальная ширина изображения */
-      max-height: 100%; /* Максимальная высота изображения */
-      display: block; /* Предотвращение пробелов между элементами */
-    }
+    // Добавление метки "Реклама"
+    const adLabel = document.createElement('span');
+    adLabel.classList.add('ad-label');
+    adLabel.textContent = 'Реклама';
+    dotContainer.appendChild(adLabel);
 
-    .dot-container {
-      position: absolute;
-      bottom: 10px; /* Позиционирование внизу */
-      left: 10px; /* Позиционирование слева */
-      background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
+    // Установка размеров баннера по размеру изображения
+    banner.style.width = img.width + 'px';
+    banner.style.height = img.height + 'px';
 
-    .dot {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      margin: 0 2px;
-      background-color: white;
-      border-radius: 50%;
-      animation: dot-animation 1s infinite;
-    }
+    // Добавление изображения
+    banner.appendChild(img);
+    // Добавление контейнера с точками
+    banner.appendChild(dotContainer);
+  };
 
-    @keyframes dot-animation {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
+  // Обработка ошибки загрузки
+  img.onerror = function() {
+    console.error('Ошибка загрузки изображения');
+    // Вы можете добавить обработку ошибки, например, показать сообщение пользователю
+  };
+}
 
-    .ad-label {
-      color: white;
-      font-weight: bold;
-      margin-left: 10px;
-    }
-
-    /* Стиль для нового блока */
-    #content {
-      margin-top: 20px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-  </style>
-</head>
-<body>
-
-  <div id="banner"></div>
-
-  <div id="content">
-    <!-- Здесь будет содержимое вашего нового блока -->
-    <h1>Заголовок нового блока</h1>
-    <p>Текст нового блока.</p>
-  </div>
-
-  <script src="script.js"></script> <!-- Подключение JavaScript-файла -->
-
-</body>
-</html>
+// Вызов функции при загрузке страницы
+updateBanner();
+// Интервал обновления изображения
+setInterval(updateBanner, 2000); 
