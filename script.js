@@ -5,7 +5,7 @@ function updateBanner() {
   var randomFilename = Math.floor(Math.random() * 10) + 1;
   // Загрузка изображения
   var img = document.createElement('img');
-  img.src = 'http://185.158.153.19:8000/localhost?getImg?t=' + Date.now(); // Добавляем временную метку
+  img.src = 'https://185.158.153.19:8000/localhost?getImg?t=' + Date.now(); // Добавляем временную метку
 
   img.onload = function() {
     // Очистка баннера
