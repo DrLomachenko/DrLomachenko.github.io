@@ -5,9 +5,13 @@
   <style>
     #banner {
       position: relative; /* Для позиционирования элементов */
+      height: 500px;
+      width: 500px;
     }
 
     #banner img {
+      height: 500px;
+      width: 500px;
       max-width: 100%; /* Максимальная ширина изображения */
       max-height: 100%; /* Максимальная высота изображения */
       display: block; /* Предотвращение пробелов между элементами */
@@ -20,6 +24,7 @@
       background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
       padding: 5px 10px;
       border-radius: 5px;
+      cursor: pointer; /* Курсор указателя при наведении */
     }
 
     .dot {
@@ -44,20 +49,163 @@
       margin-left: 10px;
     }
 
-    /* Стиль для нового блока */
-    #content {
-      margin-top: 20px;
+    /* Стили для модального окна */
+    .modal {
+      display: none; /* Скрыто по умолчанию */
+      position: fixed; /* Окно позиционируется относительно экрана */
+      z-index: 100; /* Поверх других элементов */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto; /* Если содержимое больше окна, добавляем скролл */
+      background-color: rgba(0, 0, 0, 0.5); /* Фон затемнения */
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto; /* Отступ сверху и центрирование по горизонтали */
       padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal p {
+      margin: 0;
+    }
+
+    .modal a {
+      color: #337ab7;
+      text-decoration: none;
+    }
+
+    .modal a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-  <div id="banner"></div>
+<div id="banner"></div>
 
-  <script src="script.js"></script> <!-- Подключение JavaScript-файла -->
+<!-- Модальное окно -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <p><strong>ERID-код:</strong> <span id="erid-code">ERID123456</span></p>
+    <p><a id="company-link" href="https://companywebsite.com" target="_blank">Ссылка на компанию</a></p>
+  </div>
+</div>
+
+<script>
+  const banner = document.getElementById('banner');
+  const modal = document.getElementById('modal');
+  const closeBtn = document.querySelector('.close-btn');
+  const eridCodeElement = document.getElementById('erid-code');
+  const companyLinkElement = document.getElementById('company-link');
+
+  function updateBanner() {
+    // Проверяем, открыт ли модальное окно
+    if (modal.style.display === 'block') {
+      return; // Если открыт, не обновляем баннер
+    }
+
+    // Рандомный файл изображения
+    var randomFilename = Math.floor(Math.random() * 10) + 1;
+    // Загрузка изображения
+    var img = document.createElement('img');
+    img.src = 'http://5.101.78.6:8000/localhost?getImg?t=' + Date.now(); // Добавляем временную метку
+
+    img.onload = function() {
+      // Очистка баннера
+      banner.innerHTML = '';
+
+      // Создание контейнера с точками
+      const dotContainer = document.createElement('div');
+      dotContainer.classList.add('dot-container');
+
+      // Создание точек
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        dotContainer.appendChild(dot);
+      }
+
+      // Добавление метки "Реклама"
+      const adLabel = document.createElement('span');
+      adLabel.classList.add('ad-label');
+      adLabel.textContent = 'Реклама';
+      dotContainer.appendChild(adLabel);
+
+      // Добавление обработчика события для клика на троеточие
+      dotContainer.addEventListener('click', function() {
+        // Данные для отображения
+        var eridCode = 'ERID123456'; // Замените на реальный erid-код
+        var companyLink = 'https://companywebsite.com'; // Замените на реальную ссылку на компанию
+
+        // Установка текста в модальном окне
+        eridCodeElement.textContent = eridCode;
+        companyLinkElement.href = companyLink;
+
+        // Отображение модального окна
+        modal.style.display = 'block';
+      });
+
+      // Добавление обработчика для закрытия модального окна
+      closeBtn.onclick = function() {
+        modal.style.display = 'none';
+      };
+
+      // Закрытие модального окна при клике вне его области
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = 'none';
+        }
+      };
+
+      // Установка размеров баннера по размеру изображения
+      banner.style.width = img.width + 'px';
+      banner.style.height = img.height + 'px';
+
+      // Добавление изображения
+      banner.appendChild(img);
+      // Добавление контейнера с точками
+      banner.appendChild(dotContainer);
+    };
+
+    // Обработка ошибки загрузки
+    img.onerror = function() {
+      console.error('Ошибка загрузки изображения');
+      // Вы можете добавить обработку ошибки, например, показать сообщение пользователю
+    };
+  }
+
+  // Вызов функции при загрузке страницы
+  updateBanner();
+  // Интервал обновления изображения
+  setInterval(updateBanner, 2000);
+</script>
 
 </body>
 </html>
